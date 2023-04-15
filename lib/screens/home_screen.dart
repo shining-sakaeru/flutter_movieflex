@@ -57,7 +57,7 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(
                   height: 50,
                 ),
-                Expanded(child: nowPlayingMakeList(snapshot)),
+                // Expanded(child: nowPlayingMakeList(snapshot)),
               ],
             );
           }
@@ -87,19 +87,19 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-ListView nowPlayingMakeList(AsyncSnapshot<List<MovieModel>> snapshot) {
-  return ListView.separated(
-    scrollDirection: Axis.horizontal,
-    itemCount: snapshot.data!.length,
-    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-    itemBuilder: (context, index) {
-      var movie = snapshot.data![index];
-      return Movie(
-        title: movie.title,
-        id: movie.id.toString(),
-        getFullPosterPath: movie.getFullPosterPath(),
-      );
-    },
-    separatorBuilder: (context, index) => const SizedBox(width: 40),
-  );
-}
+// ListView nowPlayingMakeList(AsyncSnapshot<List<MovieModel>> snapshot) {
+//   return ListView.separated(
+//     scrollDirection: Axis.horizontal,
+//     itemCount: snapshot.data!.length,
+//     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+//     itemBuilder: (context, index) {
+//       var movie = snapshot.data![index];
+//       return Movie(
+//         title: movie.title,
+//         id: movie.id.toString(),
+//         getFullPosterPath: movie.getFullPosterPath(),
+//       );
+//     },
+//     separatorBuilder: (context, index) => const SizedBox(width: 40),
+//   );
+// }

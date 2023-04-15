@@ -3,7 +3,6 @@ import 'package:flutter_movieflix/screens/detail_screen.dart';
 
 class Movie extends StatelessWidget {
   final String id, title, getFullPosterPath;
-
   const Movie({
     super.key,
     required this.id,
