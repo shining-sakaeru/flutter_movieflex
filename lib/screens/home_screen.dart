@@ -21,87 +21,163 @@ https://movies-api.nomadcoders.workers.dev/movie?id=1 (아이디를 세부 정�
 
 import 'package:flutter/material.dart';
 import 'package:flutter_movieflix/models/movie_model.dart';
+import 'package:flutter_movieflix/screens/detail_screen.dart';
 import 'package:flutter_movieflix/services/api_service.dart';
-import 'package:flutter_movieflix/widgets/movie_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
-  final Future<List<MovieModel>> movies = ApiService.getPopularMovies();
+  final Future<List<MovieModel>> popularMovies =
+      ApiService.getMovies("popular");
+  final Future<List<MovieModel>> nowPlaying =
+      ApiService.getMovies("nowPlaying");
+  final Future<List<MovieModel>> upcoming = ApiService.getMovies("upcoming");
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(0, 0, 0, 0),
+        backgroundColor: Colors.red,
         title: const Text(
-          'Toonflix',
+          'TOONFLIX',
           style: TextStyle(
-            color: Colors.red,
-            fontSize: 30,
-            fontWeight: FontWeight.w600,
+            fontSize: 35,
+            fontWeight: FontWeight.w900,
           ),
         ),
       ),
-      body: FutureBuilder(
-        future: movies,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Column(
-              children: [
-                const SizedBox(
-                  height: 50,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 15),
+              const Text(
+                'Popular Movies',
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700,
                 ),
-                Expanded(child: popularMakeList(snapshot)),
-                const SizedBox(
-                  height: 50,
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 230,
+                child: FutureBuilder(
+                  future: popularMovies,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return makeList(snapshot, 300, 180);
+                    }
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  },
                 ),
-                // Expanded(child: nowPlayingMakeList(snapshot)),
-              ],
-            );
-          }
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
+              ),
+              const Text(
+                'Now in Cinemas',
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 210,
+                child: FutureBuilder(
+                  future: nowPlaying,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return makeList(snapshot, 150, 150);
+                    }
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  },
+                ),
+              ),
+              const Text(
+                'Coming Soon',
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 220,
+                child: FutureBuilder(
+                  future: upcoming,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return makeList(snapshot, 150, 150);
+                    }
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  ListView popularMakeList(AsyncSnapshot<List<MovieModel>> snapshot) {
+  ListView makeList(
+      AsyncSnapshot<List<MovieModel>> snapshot, double width, double height) {
     return ListView.separated(
       scrollDirection: Axis.horizontal,
       itemCount: snapshot.data!.length,
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       itemBuilder: (context, index) {
-        var movie = snapshot.data![index];
-        return Movie(
-          title: movie.title,
-          id: movie.id.toString(),
-          getFullPosterPath: movie.getFullPosterPath(),
-          overview: movie.overview,
+        final movie = snapshot.data![index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailScreen(
+                    title: movie.title, poster: movie.poster, id: movie.id),
+              ),
+            );
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: width,
+                height: height,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      'https://image.tmdb.org/t/p/w500${movie.poster}',
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: width,
+                child: Text(
+                  movie.title,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  style: const TextStyle(
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
-      separatorBuilder: (context, index) => const SizedBox(width: 40),
+      separatorBuilder: (context, index) => const SizedBox(
+        width: 10,
+      ),
     );
   }
-}
-
-ListView nowPlayingMakeList(AsyncSnapshot<List<MovieModel>> snapshot) {
-  return ListView.separated(
-    scrollDirection: Axis.horizontal,
-    itemCount: snapshot.data!.length,
-    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-    itemBuilder: (context, index) {
-      var movie = snapshot.data![index];
-      return Movie(
-        title: movie.title,
-        id: movie.id.toString(),
-        getFullPosterPath: movie.getFullPosterPath(),
-        overview: movie.overview,
-      );
-    },
-    separatorBuilder: (context, index) => const SizedBox(width: 40),
-  );
 }

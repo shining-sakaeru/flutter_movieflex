@@ -10,15 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_movieflix/services/api_service.dart';
 
 class DetailScreen extends StatefulWidget {
-  final String title, id, getFullPosterPath, overview;
+  final String title, poster, id;
 
   const DetailScreen({
     super.key,
     required this.title,
+    required this.poster,
     required this.id,
-    required this.getFullPosterPath,
-    required this.overview,
-    // required this.name,
   });
 
   @override
@@ -26,118 +24,115 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  late Future<MovieDetailModel> movie;
+  late Future<MovieDetailModel> detailMovie;
 
-  // Future iniyPref() async {
-  //   prefs = await sharedPreferences.getIntance();
-  // }
   @override
   void initState() {
     super.initState();
-    movie = ApiService.getMovieById(widget.id);
+    detailMovie = ApiService.getMovieByID(widget.id);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          'Back to list',
-          style: TextStyle(
-            fontSize: 24,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      body: Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage(
-              widget.getFullPosterPath,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          centerTitle: false,
+          title: const Text(
+            'Back to list',
+            style: TextStyle(
+              color: Colors.white,
             ),
-            fit: BoxFit.cover,
           ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
         ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(50),
-            child: Column(
-              children: [
-                Text(
-                  widget.title,
-                  style: const TextStyle(
-                    fontSize: 30,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                Hero(
-                  tag: widget.id,
-                  child: Container(
-                    clipBehavior: Clip.hardEdge,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 15,
-                          offset: const Offset(10, 10),
-                          color: Colors.black.withOpacity(0.3),
-                        ),
-                      ],
+        body: Stack(
+          children: [
+            Image.network(
+              'https://image.tmdb.org/t/p/w500${widget.poster}',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+              color: Colors.black38,
+              colorBlendMode: BlendMode.darken,
+            ),
+            Positioned(
+              top: 300,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width - 40,
+                      child: Text(widget.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                          )),
                     ),
-                  ),
+                    const SizedBox(height: 15),
+                    FutureBuilder(
+                        future: detailMovie,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // StarRating(rating: snapshot.data!.vote),
+                                const SizedBox(height: 15),
+                                Row(
+                                  children: [
+                                    for (int i = 0;
+                                        i < snapshot.data!.genres.length;
+                                        i++)
+                                      Text(
+                                        '${snapshot.data!.genres[i]['name']}${i == snapshot.data!.genres.length - 1 ? '' : ', '}',
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.white38,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(height: 15),
+                                const Text(
+                                  'Storyline',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width - 40,
+                                  child: Text(
+                                    snapshot.data!.overview,
+                                    maxLines: 10,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                          return const Text("...");
+                        }),
+                  ],
                 ),
-                const SizedBox(
-                  height: 25,
-                ),
-                FutureBuilder(
-                  future: movie,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Storyline',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 25,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            'Adult=${snapshot.data!.adult}',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          // for (int i = 0; i < snapshot.data!.genres.length; i++)
-                          // Text(
-                          //   snapshot.data!.instance.genres,
-                          //   [i]['name']}${i == snapshot.data!.genres.length - 1 ? '' : ', '}',
-                          // ),
-                          Text(
-                            snapshot.data!.overview,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      );
-                    }
-                    return const Text('...');
-                  },
-                )
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          ],
+        ));
   }
 }

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_movieflix/screens/detail_screen.dart';
 
 class Movie extends StatelessWidget {
-  final String id, title, getFullPosterPath, overview;
+  final String id, title, poster, overview;
   const Movie({
     super.key,
     required this.id,
     required this.title,
-    required this.getFullPosterPath,
+    required this.poster,
     required this.overview,
     // required this.name,
   });
@@ -22,9 +22,7 @@ class Movie extends StatelessWidget {
             builder: (context) => DetailScreen(
               title: title,
               id: id,
-              getFullPosterPath: getFullPosterPath,
-              overview: overview,
-              // name: name,
+              poster: poster,
             ),
             fullscreenDialog: false,
           ),
@@ -47,7 +45,7 @@ class Movie extends StatelessWidget {
                   )
                 ],
               ),
-              child: Image.network(getFullPosterPath),
+              child: Image.network(poster),
             ),
           ),
           const SizedBox(
