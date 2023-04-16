@@ -55,6 +55,7 @@ class ApiService {
   static const String popular = "popular";
   static const String nowPlaying = "nowPlaying";
   static const String comingSoon = "comingSoon";
+  static String detailedMovie = "movie";
 
   static Future<List<MovieModel>> getPopularMovies() async {
     List<MovieModel> movieInstances = [];
@@ -66,7 +67,6 @@ class ApiService {
         final instance = MovieModel.fromJson(movie);
         movieInstances.add(instance);
       }
-      print(movieInstances);
       return movieInstances;
     }
     throw Error();
@@ -82,7 +82,6 @@ class ApiService {
         final instance = MovieModel.fromJson(movie);
         movieInstances.add(instance);
       }
-      print(movieInstances);
       return movieInstances;
     }
     throw Error();
@@ -98,8 +97,17 @@ class ApiService {
         final instance = MovieModel.fromJson(movie);
         movieInstances.add(instance);
       }
-      print(movieInstances);
       return movieInstances;
+    }
+    throw Error();
+  }
+
+  static Future<MovieDetailModel> getMovieById(String id) async {
+    final url = Uri.parse("$baseUrl/$detailedMovie?id=$id");
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final movie = jsonDecode(response.body);
+      return MovieDetailModel.fromJson(movie);
     }
     throw Error();
   }

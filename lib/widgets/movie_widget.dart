@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_movieflix/screens/detail_screen.dart';
 
 class Movie extends StatelessWidget {
-  final String id, title, getFullPosterPath;
+  final String id, title, getFullPosterPath, overview;
   const Movie({
     super.key,
     required this.id,
     required this.title,
     required this.getFullPosterPath,
+    required this.overview,
+    // required this.name,
   });
 
   @override
@@ -21,8 +23,10 @@ class Movie extends StatelessWidget {
               title: title,
               id: id,
               getFullPosterPath: getFullPosterPath,
+              overview: overview,
+              // name: name,
             ),
-            fullscreenDialog: true,
+            fullscreenDialog: false,
           ),
         );
       },
@@ -31,7 +35,7 @@ class Movie extends StatelessWidget {
           Hero(
             tag: id,
             child: Container(
-              width: 200,
+              width: 250,
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
